@@ -1,0 +1,39 @@
+﻿@page "/ordens"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Restaurante.Data.Modelos
+@using Restaurante.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+
+<QuickGrid Class="table" Items="context.Ordenes">
+    <PropertyColumn Property="orden => orden.MesaId" />
+    <PropertyColumn Property="orden => orden.FechaCreacion" />
+    <PropertyColumn Property="orden => orden.FechaCierre" />
+    <PropertyColumn Property="orden => orden.Estado" />
+    <PropertyColumn Property="orden => orden.Subtotal" />
+    <PropertyColumn Property="orden => orden.Propina" />
+    <PropertyColumn Property="orden => orden.Total" />
+
+    <TemplateColumn Context="orden">
+        <a href="@($"ordens/edit?ordenid={orden.OrdenId}")">Edit</a> |
+        <a href="@($"ordens/details?ordenid={orden.OrdenId}")">Details</a> |
+        <a href="@($"ordens/delete?ordenid={orden.OrdenId}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private ApplicationDbContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

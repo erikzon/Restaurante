@@ -1,0 +1,79 @@
+﻿@page "/ordens/delete"
+@using Microsoft.EntityFrameworkCore
+@using Restaurante.Data.Modelos
+@inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete</PageTitle>
+
+<h1>Delete</h1>
+
+<p>Are you sure you want to delete this?</p>
+<div>
+    <h2>Orden</h2>
+    <hr />
+    @if (orden is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">MesaId</dt>
+            <dd class="col-sm-10">@orden.MesaId</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">FechaCreacion</dt>
+            <dd class="col-sm-10">@orden.FechaCreacion</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">FechaCierre</dt>
+            <dd class="col-sm-10">@orden.FechaCierre</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Estado</dt>
+            <dd class="col-sm-10">@orden.Estado</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Subtotal</dt>
+            <dd class="col-sm-10">@orden.Subtotal</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Propina</dt>
+            <dd class="col-sm-10">@orden.Propina</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Total</dt>
+            <dd class="col-sm-10">@orden.Total</dd>
+        </dl>
+        <EditForm method="post" Model="orden" OnValidSubmit="DeleteOrden" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(orden is null)">Delete</button> |
+            <a href="/ordens">Back to List</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private Orden? orden;
+
+    [SupplyParameterFromQuery]
+    private int OrdenId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        orden = await context.Ordenes.FirstOrDefaultAsync(m => m.OrdenId == OrdenId);
+
+        if (orden is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteOrden()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Ordenes.Remove(orden!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/ordens");
+    }
+}

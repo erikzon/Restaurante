@@ -1,0 +1,58 @@
+﻿@page "/ordens/details"
+@using Microsoft.EntityFrameworkCore
+@using Restaurante.Data.Modelos
+@inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Orden</h2>
+    <hr />
+    @if (orden is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">MesaId</dt>
+            <dd class="col-sm-10">@orden.MesaId</dd>
+            <dt class="col-sm-2">FechaCreacion</dt>
+            <dd class="col-sm-10">@orden.FechaCreacion</dd>
+            <dt class="col-sm-2">FechaCierre</dt>
+            <dd class="col-sm-10">@orden.FechaCierre</dd>
+            <dt class="col-sm-2">Estado</dt>
+            <dd class="col-sm-10">@orden.Estado</dd>
+            <dt class="col-sm-2">Subtotal</dt>
+            <dd class="col-sm-10">@orden.Subtotal</dd>
+            <dt class="col-sm-2">Propina</dt>
+            <dd class="col-sm-10">@orden.Propina</dd>
+            <dt class="col-sm-2">Total</dt>
+            <dd class="col-sm-10">@orden.Total</dd>
+        </dl>
+        <div>
+            <a href="@($"/ordens/edit?ordenid={orden.OrdenId}")">Edit</a> |
+            <a href="@($"/ordens")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Orden? orden;
+
+    [SupplyParameterFromQuery]
+    private int OrdenId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        orden = await context.Ordenes.FirstOrDefaultAsync(m => m.OrdenId == OrdenId);
+
+        if (orden is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

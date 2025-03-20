@@ -1,0 +1,126 @@
+﻿@page "/ordens/edit"
+@using Microsoft.EntityFrameworkCore
+@using Restaurante.Data.Modelos
+@inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Orden</h2>
+<hr />
+@if (Orden is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Orden" OnValidSubmit="UpdateOrden" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Orden.OrdenId" value="@Orden.OrdenId" />
+                <div class="mb-3">
+                    <label for="mesaid" class="form-label">MesaId:</label>
+                    <InputNumber id="mesaid" @bind-Value="Orden.MesaId" class="form-control" />
+                    <ValidationMessage For="() => Orden.MesaId" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="fechacreacion" class="form-label">FechaCreacion:</label>
+                    <InputDate id="fechacreacion" @bind-Value="Orden.FechaCreacion" class="form-control" aria-required="true"/>
+                    <ValidationMessage For="() => Orden.FechaCreacion" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="fechacierre" class="form-label">FechaCierre:</label>
+                    <InputDate id="fechacierre" @bind-Value="Orden.FechaCierre" class="form-control" />
+                    <ValidationMessage For="() => Orden.FechaCierre" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="estado" class="form-label">Estado:</label>
+                    <InputSelect id="estado" @bind-Value="Orden.Estado" class="form-control" aria-required="true">
+                        <option value="">Seleccione un estado</option>
+                        @foreach (var estado in Enum.GetValues(typeof(EstadoOrden)))
+                        {
+                            <option value="@estado">@estado</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => Orden.Estado" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="subtotal" class="form-label">Subtotal:</label>
+                    <InputNumber id="subtotal" @bind-Value="Orden.Subtotal" class="form-control" />
+                    <ValidationMessage For="() => Orden.Subtotal" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="propina" class="form-label">Propina:</label>
+                    <InputNumber id="propina" @bind-Value="Orden.Propina" class="form-control" />
+                    <ValidationMessage For="() => Orden.Propina" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="total" class="form-label">Total:</label>
+                    <InputNumber id="total" @bind-Value="Orden.Total" class="form-control" />
+                    <ValidationMessage For="() => Orden.Total" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/ordens">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int OrdenId { get; set; }
+
+    [SupplyParameterFromForm]
+    private Orden? Orden { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Orden ??= await context.Ordenes.FirstOrDefaultAsync(m => m.OrdenId == OrdenId);
+
+        if (Orden is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateOrden()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Orden!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!OrdenExists(Orden!.OrdenId))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/ordens");
+    }
+
+    private bool OrdenExists(int ordenid)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Ordenes.Any(e => e.OrdenId == ordenid);
+    }
+}
