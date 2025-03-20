@@ -1,0 +1,228 @@
+﻿@page "/pos"
+@using Microsoft.EntityFrameworkCore
+@using Restaurante.Data
+@using Restaurante.Data.Modelos
+@using System.Linq
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>RESTAURANTE POS</h2>
+                <div class="d-flex">
+                    <span class="me-2">Cajero: Admin</span>
+                    <span class="badge bg-primary rounded-circle">A</span>
+                </div>
+            </div>
+
+            <div class="btn-group mb-4">
+                <button class="btn btn-outline-primary @(categoriaSeleccionada == null ? "active" : "")" @onclick="() => FiltrarPorCategoria(null)">Todos</button>
+                @foreach (var categoria in categorias)
+                {
+                    <button class="btn btn-outline-primary @(categoriaSeleccionada == categoria ? "active" : "")" @onclick="() => FiltrarPorCategoria(categoria)">@categoria.Nombre</button>
+                }
+            </div>
+
+            <div class="row">
+                @foreach (var producto in productosFiltrados)
+                {
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100" @onclick="() => AgregarProductoAOrden(producto)">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">@producto.Codigo</h5>
+                                <p class="card-text">@producto.Nombre</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-4 bg-light p-3">
+            <div class="mb-3">
+                <label for="selectMesa" class="form-label">Mesa</label>
+                <select id="selectMesa" class="form-select" @bind="mesaSeleccionadaId">
+                    @foreach (var mesa in mesas)
+                    {
+                        <option value="@mesa.MesaId">Mesa @mesa.Numero</option>
+                    }
+                </select>
+            </div>
+
+            <h4 class="text-center mb-3">ORDEN ACTUAL</h4>
+
+            <div class="order-items mb-3">
+                @foreach (var detalle in ordenActual.DetalleOrdenes)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                        <span>@detalle.Producto.Nombre</span>
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => DisminuirCantidad(detalle)">-</button>
+                            <span class="mx-2">@detalle.Cantidad</span>
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => AumentarCantidad(detalle)">+</button>
+                            <span class="ms-3">Q@(detalle.Subtotal.ToString("0.00"))</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="mt-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal</span>
+                    <span>Q@(ordenActual.Subtotal.ToString("0.00"))</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>IVA (16%)</span>
+                    <span>Q@(ordenActual.IVA.ToString("0.00"))</span>
+                </div>
+                <div class="d-flex justify-content-between fw-bold mb-4">
+                    <span>TOTAL</span>
+                    <span>Q@(ordenActual.Total.ToString("0.00"))</span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-danger" @onclick="CancelarOrden">CANCELAR</button>
+                    <button class="btn btn-primary" @onclick="ProcesarOrden">COBRAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Categoria> categorias = new();
+    private List<Producto> productos = new();
+    private List<Producto> productosFiltrados = new();
+    private List<Mesa> mesas = new();
+    private Orden ordenActual = new();
+    private Categoria categoriaSeleccionada;
+    private int mesaSeleccionadaId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarDatos();
+        InicializarOrdenActual();
+    }
+
+    private async Task CargarDatos()
+    {
+        using var context = await DbFactory.CreateDbContextAsync();
+
+        categorias = await context.Categorias.ToListAsync();
+        productos = await context.Productos.Include(p => p.Categoria).ToListAsync();
+        mesas = await context.Mesas.ToListAsync();
+
+        productosFiltrados = productos.ToList();
+
+        if (mesas.Any())
+        {
+            mesaSeleccionadaId = mesas.First().MesaId;
+        }
+    }
+
+    private void InicializarOrdenActual()
+    {
+        ordenActual = new Orden
+            {
+                FechaCreacion = DateTime.Now,
+                Estado = EstadoOrden.Activa,
+                DetalleOrdenes = new List<DetalleOrden>(),
+                MesaId = mesaSeleccionadaId
+            };
+    }
+
+    private void FiltrarPorCategoria(Categoria categoria)
+    {
+        categoriaSeleccionada = categoria;
+
+        if (categoria == null)
+        {
+            productosFiltrados = productos.ToList();
+        }
+        else
+        {
+            productosFiltrados = productos.Where(p => p.CategoriaId == categoria.CategoriaId).ToList();
+        }
+    }
+
+    private void AgregarProductoAOrden(Producto producto)
+    {
+        var detalleExistente = ordenActual.DetalleOrdenes
+            .FirstOrDefault(d => d.ProductoId == producto.ProductoId);
+
+        if (detalleExistente != null)
+        {
+            detalleExistente.Cantidad++;
+            detalleExistente.Subtotal = detalleExistente.Cantidad * detalleExistente.PrecioUnitario;
+        }
+        else
+        {
+            var nuevoDetalle = new DetalleOrden
+                {
+                    ProductoId = producto.ProductoId,
+                    Producto = producto,
+                    PrecioUnitario = producto.Precio,
+                    Cantidad = 1,
+                    Subtotal = producto.Precio
+                };
+
+            ordenActual.DetalleOrdenes.Add(nuevoDetalle);
+        }
+
+        CalcularTotales();
+    }
+
+    private void AumentarCantidad(DetalleOrden detalle)
+    {
+        detalle.Cantidad++;
+        detalle.Subtotal = detalle.Cantidad * detalle.PrecioUnitario;
+        CalcularTotales();
+    }
+
+    private void DisminuirCantidad(DetalleOrden detalle)
+    {
+        if (detalle.Cantidad > 1)
+        {
+            detalle.Cantidad--;
+            detalle.Subtotal = detalle.Cantidad * detalle.PrecioUnitario;
+        }
+        else
+        {
+            ordenActual.DetalleOrdenes.Remove(detalle);
+        }
+
+        CalcularTotales();
+    }
+
+    private void CalcularTotales()
+    {
+        ordenActual.Subtotal = ordenActual.DetalleOrdenes.Sum(d => d.Subtotal);
+        ordenActual.IVA = ordenActual.Subtotal * 0.16m;
+        ordenActual.Total = ordenActual.Subtotal + ordenActual.IVA;
+    }
+
+    private async Task ProcesarOrden()
+    {
+        if (!ordenActual.DetalleOrdenes.Any())
+        {
+            return;
+        }
+
+        ordenActual.Estado = EstadoOrden.Pagada;
+        ordenActual.FechaCierre = DateTime.Now;
+        ordenActual.MesaId = mesaSeleccionadaId;
+
+        using var context = await DbFactory.CreateDbContextAsync();
+
+        context.Ordenes.Add(ordenActual);
+        await context.SaveChangesAsync();
+
+        InicializarOrdenActual();
+    }
+
+    private void CancelarOrden()
+    {
+        InicializarOrdenActual();
+    }
+}
