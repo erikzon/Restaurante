@@ -25,7 +25,7 @@ namespace Restaurante.Data.Modelos
         public decimal Subtotal { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal IVA { get; set; }
+        public decimal Propina { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Total { get; set; }

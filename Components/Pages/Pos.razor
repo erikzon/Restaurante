@@ -53,18 +53,22 @@
             <h4 class="text-center mb-3">ORDEN ACTUAL</h4>
 
             <div class="order-items mb-3">
-                @foreach (var detalle in ordenActual.DetalleOrdenes)
+                @if (ordenActual.DetalleOrdenes is not null)
                 {
-                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                        <span>@detalle.Producto.Nombre</span>
-                        <div class="d-flex align-items-center">
-                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => DisminuirCantidad(detalle)">-</button>
-                            <span class="mx-2">@detalle.Cantidad</span>
-                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => AumentarCantidad(detalle)">+</button>
-                            <span class="ms-3">Q@(detalle.Subtotal.ToString("0.00"))</span>
+                    @foreach (var detalle in ordenActual.DetalleOrdenes)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span>@detalle.Producto.Nombre</span>
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="() => DisminuirCantidad(detalle)">-</button>
+                                <span class="mx-2">@detalle.Cantidad</span>
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="() => AumentarCantidad(detalle)">+</button>
+                                <span class="ms-3">Q@(detalle.Subtotal.ToString("0.00"))</span>
+                            </div>
                         </div>
-                    </div>
+                    }
                 }
+
             </div>
 
             <div class="mt-4">
@@ -73,8 +77,8 @@
                     <span>Q@(ordenActual.Subtotal.ToString("0.00"))</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span>IVA (16%)</span>
-                    <span>Q@(ordenActual.IVA.ToString("0.00"))</span>
+                    <span>Propina</span>
+                    <span>Q<input type="number" min="0" name="Propina" @bind="ordenActual.Propina" @oninput="@(e => OnPropinaChanged(e))" /></span>
                 </div>
                 <div class="d-flex justify-content-between fw-bold mb-4">
                     <span>TOTAL</span>
@@ -195,11 +199,20 @@
         CalcularTotales();
     }
 
+    private void OnPropinaChanged(ChangeEventArgs e)
+    {
+        if (decimal.TryParse(e.Value?.ToString(), out var newValue))
+        {
+            ordenActual.Propina = newValue;
+            CalcularTotales(); // Aquí llamas a tu método para calcular totales
+        }
+    }
+
+
     private void CalcularTotales()
     {
         ordenActual.Subtotal = ordenActual.DetalleOrdenes.Sum(d => d.Subtotal);
-        ordenActual.IVA = ordenActual.Subtotal * 0.16m;
-        ordenActual.Total = ordenActual.Subtotal + ordenActual.IVA;
+        ordenActual.Total = ordenActual.Subtotal + ordenActual.Propina;
     }
 
     private async Task ProcesarOrden()
