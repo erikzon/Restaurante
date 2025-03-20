@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurante.Data;
 
@@ -11,9 +12,11 @@ using Restaurante.Data;
 namespace Restaurante.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250320195048_InitialModel")]
+    partial class InitialModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,27 +244,27 @@ namespace Restaurante.Migrations
                         new
                         {
                             CategoriaId = 1,
-                            Nombre = "Entradas"
-                        },
-                        new
-                        {
-                            CategoriaId = 2,
                             Nombre = "Platos Fuertes"
                         },
                         new
                         {
-                            CategoriaId = 3,
+                            CategoriaId = 2,
                             Nombre = "Bebidas"
                         },
                         new
                         {
+                            CategoriaId = 3,
+                            Nombre = "Cerveza"
+                        },
+                        new
+                        {
                             CategoriaId = 4,
-                            Nombre = "Postres"
+                            Nombre = "Licor"
                         },
                         new
                         {
                             CategoriaId = 5,
-                            Nombre = "Combos"
+                            Nombre = "Extras"
                         });
                 });
 
@@ -373,11 +376,11 @@ namespace Restaurante.Migrations
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("IVA")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.Property<int>("MesaId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Propina")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("decimal(18, 2)");
@@ -425,98 +428,354 @@ namespace Restaurante.Migrations
                         new
                         {
                             ProductoId = 1,
-                            CategoriaId = 2,
-                            Codigo = "P1",
-                            Nombre = "Hamburguesa",
-                            Precio = 120.00m
+                            CategoriaId = 1,
+                            Codigo = "T1",
+                            Nombre = "Tacos (3) Pastor",
+                            Precio = 30m
                         },
                         new
                         {
                             ProductoId = 2,
-                            CategoriaId = 2,
-                            Codigo = "P2",
-                            Nombre = "Pizza",
-                            Precio = 150.00m
+                            CategoriaId = 1,
+                            Codigo = "T2",
+                            Nombre = "Tacos (3) Birria",
+                            Precio = 30m
                         },
                         new
                         {
                             ProductoId = 3,
                             CategoriaId = 1,
-                            Codigo = "P3",
-                            Nombre = "Ensalada",
-                            Precio = 80.00m
+                            Codigo = "T3",
+                            Nombre = "Tacos (3) Pollo",
+                            Precio = 30m
                         },
                         new
                         {
                             ProductoId = 4,
-                            CategoriaId = 2,
-                            Codigo = "P4",
-                            Nombre = "Pasta",
-                            Precio = 110.00m
+                            CategoriaId = 1,
+                            Codigo = "T4",
+                            Nombre = "Tacos (3) Res",
+                            Precio = 30m
                         },
                         new
                         {
                             ProductoId = 5,
-                            CategoriaId = 2,
-                            Codigo = "P5",
-                            Nombre = "Tacos",
-                            Precio = 95.00m
+                            CategoriaId = 1,
+                            Codigo = "T1Q",
+                            Nombre = "Tacos (3) Queso-Pastor",
+                            Precio = 45m
                         },
                         new
                         {
                             ProductoId = 6,
                             CategoriaId = 1,
-                            Codigo = "P6",
-                            Nombre = "Papas Fritas",
-                            Precio = 90.00m
+                            Codigo = "T2Q",
+                            Nombre = "Tacos (3) Queso-Birria",
+                            Precio = 45m
                         },
                         new
                         {
                             ProductoId = 7,
-                            CategoriaId = 3,
-                            Codigo = "B1",
-                            Nombre = "Refresco",
-                            Precio = 35.00m
+                            CategoriaId = 1,
+                            Codigo = "T3Q",
+                            Nombre = "Tacos (3) Queso-Pollo",
+                            Precio = 45m
                         },
                         new
                         {
                             ProductoId = 8,
-                            CategoriaId = 3,
-                            Codigo = "B2",
-                            Nombre = "Café",
-                            Precio = 25.00m
+                            CategoriaId = 1,
+                            Codigo = "T4Q",
+                            Nombre = "Tacos (3) Queso-Res",
+                            Precio = 45m
                         },
                         new
                         {
                             ProductoId = 9,
-                            CategoriaId = 3,
-                            Codigo = "B3",
-                            Nombre = "Agua",
-                            Precio = 20.00m
+                            CategoriaId = 1,
+                            Codigo = "G1",
+                            Nombre = "Gringa",
+                            Precio = 35m
                         },
                         new
                         {
                             ProductoId = 10,
-                            CategoriaId = 4,
-                            Codigo = "D1",
-                            Nombre = "Pastel",
-                            Precio = 45.00m
+                            CategoriaId = 1,
+                            Codigo = "N1",
+                            Nombre = "Nachos de la casa",
+                            Precio = 30m
                         },
                         new
                         {
                             ProductoId = 11,
-                            CategoriaId = 4,
-                            Codigo = "D2",
-                            Nombre = "Helado",
-                            Precio = 40.00m
+                            CategoriaId = 1,
+                            Codigo = "S1",
+                            Nombre = "Sopa de Birria",
+                            Precio = 25m
                         },
                         new
                         {
                             ProductoId = 12,
+                            CategoriaId = 1,
+                            Codigo = "N2",
+                            Nombre = "Cevinachos",
+                            Precio = 35m
+                        },
+                        new
+                        {
+                            ProductoId = 13,
+                            CategoriaId = 1,
+                            Codigo = "C1",
+                            Nombre = "Ceviche Tradicional",
+                            Precio = 70m
+                        },
+                        new
+                        {
+                            ProductoId = 14,
+                            CategoriaId = 1,
+                            Codigo = "C2",
+                            Nombre = "Ceviche Peruano",
+                            Precio = 70m
+                        },
+                        new
+                        {
+                            ProductoId = 15,
+                            CategoriaId = 1,
+                            Codigo = "C3",
+                            Nombre = "Ceviche Aguachile",
+                            Precio = 70m
+                        },
+                        new
+                        {
+                            ProductoId = 16,
+                            CategoriaId = 1,
+                            Codigo = "Ca1",
+                            Nombre = "Camarones al Ajillo",
+                            Precio = 70m
+                        },
+                        new
+                        {
+                            ProductoId = 17,
+                            CategoriaId = 2,
+                            Codigo = "b1",
+                            Nombre = "Jamaica",
+                            Precio = 15m
+                        },
+                        new
+                        {
+                            ProductoId = 18,
+                            CategoriaId = 2,
+                            Codigo = "b2",
+                            Nombre = "Crema",
+                            Precio = 15m
+                        },
+                        new
+                        {
+                            ProductoId = 19,
+                            CategoriaId = 2,
+                            Codigo = "b3",
+                            Nombre = "Horchata",
+                            Precio = 15m
+                        },
+                        new
+                        {
+                            ProductoId = 20,
+                            CategoriaId = 2,
+                            Codigo = "b4",
+                            Nombre = "Tamarindo",
+                            Precio = 15m
+                        },
+                        new
+                        {
+                            ProductoId = 21,
+                            CategoriaId = 2,
+                            Codigo = "b5",
+                            Nombre = "Limonada",
+                            Precio = 15m
+                        },
+                        new
+                        {
+                            ProductoId = 22,
+                            CategoriaId = 2,
+                            Codigo = "b6",
+                            Nombre = "Sodas",
+                            Precio = 10m
+                        },
+                        new
+                        {
+                            ProductoId = 23,
+                            CategoriaId = 2,
+                            Codigo = "b7",
+                            Nombre = "Mineral preparada",
+                            Precio = 20m
+                        },
+                        new
+                        {
+                            ProductoId = 24,
+                            CategoriaId = 2,
+                            Codigo = "b8",
+                            Nombre = "Mineral con jugo",
+                            Precio = 25m
+                        },
+                        new
+                        {
+                            ProductoId = 25,
+                            CategoriaId = 2,
+                            Codigo = "b9",
+                            Nombre = "Agua Pura",
+                            Precio = 5m
+                        },
+                        new
+                        {
+                            ProductoId = 26,
+                            CategoriaId = 2,
+                            Codigo = "b10",
+                            Nombre = "Cafe",
+                            Precio = 10m
+                        },
+                        new
+                        {
+                            ProductoId = 27,
+                            CategoriaId = 3,
+                            Codigo = "cer-1",
+                            Nombre = "Gallo",
+                            Precio = 15m
+                        },
+                        new
+                        {
+                            ProductoId = 28,
+                            CategoriaId = 3,
+                            Codigo = "cer-2",
+                            Nombre = "Corona",
+                            Precio = 20m
+                        },
+                        new
+                        {
+                            ProductoId = 29,
+                            CategoriaId = 3,
+                            Codigo = "cer-3",
+                            Nombre = "Cubetazo Gallo",
+                            Precio = 75m
+                        },
+                        new
+                        {
+                            ProductoId = 30,
+                            CategoriaId = 3,
+                            Codigo = "cer-4",
+                            Nombre = "Cubetazo Corona",
+                            Precio = 100m
+                        },
+                        new
+                        {
+                            ProductoId = 31,
+                            CategoriaId = 3,
+                            Codigo = "cer-5",
+                            Nombre = "Michelada",
+                            Precio = 35m
+                        },
+                        new
+                        {
+                            ProductoId = 32,
+                            CategoriaId = 3,
+                            Codigo = "cer-6",
+                            Nombre = "Picona Gallo",
+                            Precio = 18m
+                        },
+                        new
+                        {
+                            ProductoId = 33,
+                            CategoriaId = 3,
+                            Codigo = "cer-7",
+                            Nombre = "Picona Tecate",
+                            Precio = 15m
+                        },
+                        new
+                        {
+                            ProductoId = 34,
                             CategoriaId = 4,
-                            Codigo = "D3",
-                            Nombre = "Flan",
-                            Precio = 35.00m
+                            Codigo = "lic-1",
+                            Nombre = "Suerito",
+                            Precio = 25m
+                        },
+                        new
+                        {
+                            ProductoId = 35,
+                            CategoriaId = 4,
+                            Codigo = "lic-2",
+                            Nombre = "Botella Venado Light",
+                            Precio = 170m
+                        },
+                        new
+                        {
+                            ProductoId = 36,
+                            CategoriaId = 4,
+                            Codigo = "lic-3",
+                            Nombre = "1/2 Venado Light o XL",
+                            Precio = 85m
+                        },
+                        new
+                        {
+                            ProductoId = 37,
+                            CategoriaId = 4,
+                            Codigo = "lic-4",
+                            Nombre = "Quetzalteca preparada",
+                            Precio = 25m
+                        },
+                        new
+                        {
+                            ProductoId = 38,
+                            CategoriaId = 4,
+                            Codigo = "lic-5",
+                            Nombre = "Botella old parr",
+                            Precio = 525m
+                        },
+                        new
+                        {
+                            ProductoId = 39,
+                            CategoriaId = 4,
+                            Codigo = "lic-6",
+                            Nombre = "Botella Buchanan's",
+                            Precio = 550m
+                        },
+                        new
+                        {
+                            ProductoId = 40,
+                            CategoriaId = 4,
+                            Codigo = "lic-7",
+                            Nombre = "Red Label",
+                            Precio = 250m
+                        },
+                        new
+                        {
+                            ProductoId = 41,
+                            CategoriaId = 4,
+                            Codigo = "lic-8",
+                            Nombre = "Tequila Jose Cuervo",
+                            Precio = 250m
+                        },
+                        new
+                        {
+                            ProductoId = 42,
+                            CategoriaId = 4,
+                            Codigo = "lic-9",
+                            Nombre = "Tequila Don Julio 70",
+                            Precio = 750m
+                        },
+                        new
+                        {
+                            ProductoId = 43,
+                            CategoriaId = 4,
+                            Codigo = "lic-10",
+                            Nombre = "Botella Jagermeister",
+                            Precio = 500m
+                        },
+                        new
+                        {
+                            ProductoId = 44,
+                            CategoriaId = 5,
+                            Codigo = "ex-1",
+                            Nombre = "Helado",
+                            Precio = 25m
                         });
                 });
 
