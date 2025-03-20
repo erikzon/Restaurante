@@ -222,15 +222,45 @@
             return;
         }
 
-        ordenActual.Estado = EstadoOrden.Pagada;
-        ordenActual.FechaCierre = DateTime.Now;
-        ordenActual.MesaId = mesaSeleccionadaId;
-
         using var context = await DbFactory.CreateDbContextAsync();
 
-        context.Ordenes.Add(ordenActual);
+        // Crear una nueva orden con solo los datos necesarios, sin objetos completos
+        var nuevaOrden = new Orden
+            {
+                FechaCreacion = DateTime.Now,
+                FechaCierre = DateTime.Now,
+                Estado = EstadoOrden.Pagada,
+                MesaId = mesaSeleccionadaId,
+                Subtotal = ordenActual.Subtotal,
+                Propina = ordenActual.Propina,
+                Total = ordenActual.Total
+            };
+
+        // Agregar la orden al contexto
+        context.Ordenes.Add(nuevaOrden);
+
+        // Guardar primero para obtener el ID de la orden
         await context.SaveChangesAsync();
 
+        // Ahora crear los detalles de la orden sin incluir objetos completos
+        foreach (var detalle in ordenActual.DetalleOrdenes)
+        {
+            var nuevoDetalle = new DetalleOrden
+                {
+                    OrdenId = nuevaOrden.OrdenId,
+                    ProductoId = detalle.ProductoId,
+                    Cantidad = detalle.Cantidad,
+                    PrecioUnitario = detalle.PrecioUnitario,
+                    Subtotal = detalle.Subtotal
+                };
+
+            context.DetalleOrdenes.Add(nuevoDetalle);
+        }
+
+        // Guardar los detalles
+        await context.SaveChangesAsync();
+
+        // Reiniciar la orden actual
         InicializarOrdenActual();
     }
 
