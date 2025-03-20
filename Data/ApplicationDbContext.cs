@@ -54,27 +54,28 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         // Categorías
         modelBuilder.Entity<Categoria>().HasData(
-            new Categoria { CategoriaId = 1, Nombre = "Entradas" },
-            new Categoria { CategoriaId = 2, Nombre = "Platos Fuertes" },
-            new Categoria { CategoriaId = 3, Nombre = "Bebidas" },
-            new Categoria { CategoriaId = 4, Nombre = "Postres" },
-            new Categoria { CategoriaId = 5, Nombre = "Combos" }
+            new Categoria { CategoriaId = 1, Nombre = "Platos Fuertes" },
+            new Categoria { CategoriaId = 2, Nombre = "Bebidas" },
+            new Categoria { CategoriaId = 3, Nombre = "Cerveza" },
+            new Categoria { CategoriaId = 4, Nombre = "Licor" },
+            new Categoria { CategoriaId = 5, Nombre = "Extras" }
         );
 
         // Productos
         modelBuilder.Entity<Producto>().HasData(
-            new Producto { ProductoId = 1, Nombre = "Hamburguesa", Precio = 120.00m, Codigo = "P1", CategoriaId = 2 },
-            new Producto { ProductoId = 2, Nombre = "Pizza", Precio = 150.00m, Codigo = "P2", CategoriaId = 2 },
-            new Producto { ProductoId = 3, Nombre = "Ensalada", Precio = 80.00m, Codigo = "P3", CategoriaId = 1 },
-            new Producto { ProductoId = 4, Nombre = "Pasta", Precio = 110.00m, Codigo = "P4", CategoriaId = 2 },
-            new Producto { ProductoId = 5, Nombre = "Tacos", Precio = 95.00m, Codigo = "P5", CategoriaId = 2 },
-            new Producto { ProductoId = 6, Nombre = "Papas Fritas", Precio = 90.00m, Codigo = "P6", CategoriaId = 1 },
-            new Producto { ProductoId = 7, Nombre = "Refresco", Precio = 35.00m, Codigo = "B1", CategoriaId = 3 },
-            new Producto { ProductoId = 8, Nombre = "Café", Precio = 25.00m, Codigo = "B2", CategoriaId = 3 },
-            new Producto { ProductoId = 9, Nombre = "Agua", Precio = 20.00m, Codigo = "B3", CategoriaId = 3 },
-            new Producto { ProductoId = 10, Nombre = "Pastel", Precio = 45.00m, Codigo = "D1", CategoriaId = 4 },
-            new Producto { ProductoId = 11, Nombre = "Helado", Precio = 40.00m, Codigo = "D2", CategoriaId = 4 },
-            new Producto { ProductoId = 12, Nombre = "Flan", Precio = 35.00m, Codigo = "D3", CategoriaId = 4 }
+            new Producto { ProductoId = 1, Nombre = "Tacos (3) Pastor", Precio = 30, Codigo = "T1", CategoriaId = 1 },
+            new Producto { ProductoId = 2, Nombre = "Tacos (3) Birria", Precio = 30, Codigo = "T2", CategoriaId = 1 },
+            new Producto { ProductoId = 3, Nombre = "Tacos (3) Pollo", Precio = 30, Codigo = "T3", CategoriaId = 1 },
+            new Producto { ProductoId = 4, Nombre = "Tacos (3) Res", Precio = 30, Codigo = "T4", CategoriaId = 1 },
+            new Producto { ProductoId = 5, Nombre = "Tacos (3) Queso-Pastor", Precio = 45, Codigo = "T1Q", CategoriaId = 1 },
+            new Producto { ProductoId = 6, Nombre = "Tacos (3) Queso-Birria", Precio = 45, Codigo = "T2Q", CategoriaId = 1 },
+            new Producto { ProductoId = 7, Nombre = "Tacos (3) Queso-Pollo", Precio = 45, Codigo = "T3Q", CategoriaId = 1 },
+            new Producto { ProductoId = 8, Nombre = "Tacos (3) Queso-Res", Precio = 45, Codigo = "T4Q", CategoriaId = 1 },
+
+            new Producto { ProductoId = 9, Nombre = "Gringa", Precio = 35, Codigo = "G1", CategoriaId = 1 },
+            new Producto { ProductoId = 10, Nombre = "Nachos de la casa", Precio = 30, Codigo = "N1", CategoriaId = 1 },
+            new Producto { ProductoId = 11, Nombre = "Sopa de Birria", Precio = 30, Codigo = "N1", CategoriaId = 1 },
+
         );
 
         // Mesas
