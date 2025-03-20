@@ -1,11 +1,13 @@
-﻿@page "/ordens"
+﻿@page "/ordenes"
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Restaurante.Data.Modelos
 @using Restaurante.Data
 @implements IAsyncDisposable
 @inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
+@using Microsoft.AspNetCore.Authorization
 
+@attribute [Authorize]
 <PageTitle>Index</PageTitle>
 
 <h1>Index</h1>

@@ -1,4 +1,7 @@
 ﻿@page "/ordens/delete"
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
 @using Microsoft.EntityFrameworkCore
 @using Restaurante.Data.Modelos
 @inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory

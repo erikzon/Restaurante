@@ -3,7 +3,9 @@
 @using Restaurante.Data.Modelos
 @inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Authorization
 
+@attribute [Authorize]
 <PageTitle>Edit</PageTitle>
 
 <h1>Edit</h1>
