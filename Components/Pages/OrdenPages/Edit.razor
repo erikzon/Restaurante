@@ -5,7 +5,7 @@
 @inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = "admin")]
 <PageTitle>Edit</PageTitle>
 
 <h1>Edit</h1>
