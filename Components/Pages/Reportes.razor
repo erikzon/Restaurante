@@ -1,0 +1,736 @@
+﻿@page "/reportes"
+@using Microsoft.EntityFrameworkCore
+@using System.Linq
+@inject ApplicationDbContext DbContext
+@inject IJSRuntime JSRuntime
+@using Restaurante.Data
+@using Restaurante.Data.Modelos
+
+<h3 class="mb-4">Reportes de Restaurante</h3>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Filtros</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="fechaInicio">Fecha Inicio:</label>
+                    <input type="date" class="form-control" id="fechaInicio" @bind="FechaInicio" />
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="fechaFin">Fecha Fin:</label>
+                    <input type="date" class="form-control" id="fechaFin" @bind="FechaFin" />
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100" @onclick="GenerarReporte">Generar Reporte</button>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="tipoReporte">Tipo de Reporte:</label>
+                    <select class="form-control" id="tipoReporte" @bind="TipoReporteSeleccionado">
+                        <option value="ProductosMasVendidos">Productos Más Vendidos</option>
+                        <option value="VentasPorCategoria">Ventas por Categoría</option>
+                        <option value="VentasDiarias">Ventas Diarias</option>
+                        <option value="VentasPorMesa">Ventas por Mesa</option>
+                        <option value="PromedioConsumo">Promedio de Consumo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="cantidadItems">Cantidad de Items:</label>
+                    <select class="form-control" id="cantidadItems" @bind="CantidadItems">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex align-items-end justify-content-end">
+                <button class="btn btn-success me-2" @onclick="ExportarPDF" disabled="@(!DatosGenerados)">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+                <button class="btn btn-info" @onclick="AbrirModal" disabled="@(!DatosGenerados)">
+                    <i class="fas fa-print"></i> Vista Previa
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (DatosGenerados)
+{
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>@ObtenerTituloReporte()</h5>
+            <small>Periodo: @FechaInicio.ToString("dd/MM/yyyy") - @FechaFin.ToString("dd/MM/yyyy")</small>
+        </div>
+        <div class="card-body">
+            @switch (TipoReporteSeleccionado)
+            {
+                case "ProductosMasVendidos":
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Unidades Vendidas</th>
+                                    <th>Total Ventas</th>
+                                    <th>% del Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int contador = 1;
+                                    decimal totalVentas = ProductosMasVendidos.Sum(p => p.TotalVentas);
+                                }
+                                @foreach (var producto in ProductosMasVendidos)
+                                {
+                                    decimal porcentaje = (producto.TotalVentas / totalVentas) * 100;
+                                    <tr>
+                                        <td>@contador</td>
+                                        <td>@producto.Nombre</td>
+                                        <td>@producto.Categoria</td>
+                                        <td class="text-end">@producto.UnidadesVendidas</td>
+                                        <td class="text-end">Q @producto.TotalVentas.ToString("N2")</td>
+                                        <td class="text-end">@porcentaje.ToString("N2")%</td>
+                                    </tr>
+                                    contador++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Insights</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul>
+                                        @if (ProductosMasVendidos.Any())
+                                        {
+                                            <li>El producto más vendido fue <strong>@ProductosMasVendidos.First().Nombre</strong> con @ProductosMasVendidos.First().UnidadesVendidas unidades.</li>
+                                            <li>Los 3 productos principales representan el @((ProductosMasVendidos.Take(3).Sum(p => p.TotalVentas) / totalVentas * 100).ToString("N2"))% de las ventas totales.</li>
+                                            <li>La categoría más vendida fue <strong>@ProductosMasVendidos.GroupBy(p => p.Categoria).OrderByDescending(g => g.Sum(p => p.TotalVentas)).First().Key</strong>.</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    break;
+
+                case "VentasPorCategoria":
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Categoría</th>
+                                    <th>Total Unidades</th>
+                                    <th>Total Ventas</th>
+                                    <th>% del Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int contadorCat = 1;
+                                    decimal totalVentasCat = VentasPorCategoria.Sum(c => c.TotalVentas);
+                                }
+                                @foreach (var categoria in VentasPorCategoria)
+                                {
+                                    decimal porcentaje = (categoria.TotalVentas / totalVentasCat) * 100;
+                                    <tr>
+                                        <td>@contadorCat</td>
+                                        <td>@categoria.Nombre</td>
+                                        <td class="text-end">@categoria.TotalUnidades</td>
+                                        <td class="text-end">Q @categoria.TotalVentas.ToString("N2")</td>
+                                        <td class="text-end">@porcentaje.ToString("N2")%</td>
+                                    </tr>
+                                    contadorCat++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2">Total</th>
+                                    <th class="text-end">@VentasPorCategoria.Sum(c => c.TotalUnidades)</th>
+                                    <th class="text-end">Q @totalVentasCat.ToString("N2")</th>
+                                    <th class="text-end">100.00%</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    break;
+
+                case "VentasDiarias":
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Órdenes</th>
+                                    <th>Artículos Vendidos</th>
+                                    <th>Subtotal</th>
+                                    <th>Propinas</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var venta in VentasDiarias)
+                                {
+                                    <tr>
+                                        <td>@venta.Fecha.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-end">@venta.TotalOrdenes</td>
+                                        <td class="text-end">@venta.TotalArticulos</td>
+                                        <td class="text-end">Q @venta.Subtotal.ToString("N2")</td>
+                                        <td class="text-end">Q @venta.Propinas.ToString("N2")</td>
+                                        <td class="text-end">Q @venta.Total.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+                                    <th class="text-end">@VentasDiarias.Sum(v => v.TotalOrdenes)</th>
+                                    <th class="text-end">@VentasDiarias.Sum(v => v.TotalArticulos)</th>
+                                    <th class="text-end">Q @VentasDiarias.Sum(v => v.Subtotal).ToString("N2")</th>
+                                    <th class="text-end">Q @VentasDiarias.Sum(v => v.Propinas).ToString("N2")</th>
+                                    <th class="text-end">Q @VentasDiarias.Sum(v => v.Total).ToString("N2")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Insights</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul>
+                                        @if (VentasDiarias.Any())
+                                        {
+                                            var mejorDia = VentasDiarias.OrderByDescending(v => v.Total).First();
+                                            var peorDia = VentasDiarias.OrderBy(v => v.Total).First();
+                                            var promedioDiario = VentasDiarias.Average(v => v.Total);
+                                            var promedioOrdenes = VentasDiarias.Average(v => v.TotalOrdenes);
+
+                                            <li>El día con mayores ventas fue el <strong>@mejorDia.Fecha.ToString("dd/MM/yyyy")</strong> con Q @mejorDia.Total.ToString("N2").</li>
+                                            <li>El día con menores ventas fue el <strong>@peorDia.Fecha.ToString("dd/MM/yyyy")</strong> con Q @peorDia.Total.ToString("N2").</li>
+                                            <li>Promedio de ventas diarias: <strong>Q @promedioDiario.ToString("N2")</strong>.</li>
+                                            <li>Promedio de órdenes por día: <strong>@promedioOrdenes.ToString("N2")</strong>.</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    break;
+
+                case "VentasPorMesa":
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Mesa</th>
+                                    <th>Órdenes</th>
+                                    <th>Total Ventas</th>
+                                    <th>Promedio por Orden</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var mesa in VentasPorMesa)
+                                {
+                                    <tr>
+                                        <td>@mesa.Numero</td>
+                                        <td class="text-end">@mesa.TotalOrdenes</td>
+                                        <td class="text-end">Q @mesa.TotalVentas.ToString("N2")</td>
+                                        <td class="text-end">Q @mesa.PromedioOrden.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    break;
+
+                case "PromedioConsumo":
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5>Consumo Promedio</h5>
+                                    <h3 class="text-primary mt-3">Q @PromedioConsumoData.ConsumoPromedio.ToString("N2")</h3>
+                                    <p>por orden</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5>Propina Promedio</h5>
+                                    <h3 class="text-success mt-3">Q @PromedioConsumoData.PropinaPromedio.ToString("N2")</h3>
+                                    <p>(@PromedioConsumoData.PorcentajePropina.ToString("N2")%)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5>Artículos por Orden</h5>
+                                    <h3 class="text-info mt-3">@PromedioConsumoData.ArticulosPromedio.ToString("N1")</h3>
+                                    <p>unidades</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    break;
+            }
+        </div>
+    </div>
+}
+
+<!-- Modal para Vista Previa -->
+<div class="@ModalClass" tabindex="-1" role="dialog" style="@ModalDisplay">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@ObtenerTituloReporte()</h5>
+                <button type="button" class="btn-close" @onclick="CerrarModal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reporteParaImprimir">
+                    <div class="d-flex justify-content-between mb-4">
+                        <div>
+                            <h4>Restaurante Pa' que me invitan</h4>
+                            <p>Reporte de @ObtenerTituloReporte()</p>
+                            <p>Periodo: @FechaInicio.ToString("dd/MM/yyyy") - @FechaFin.ToString("dd/MM/yyyy")</p>
+                        </div>
+                        <div class="text-end">
+                            <p>Fecha generación: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+
+                    @switch (TipoReporteSeleccionado)
+                    {
+                        case "PromedioConsumo":
+                            <h5>Promedio de Consumo</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5>Consumo Promedio</h5>
+                                            <h3 class="text-primary mt-3">Q @PromedioConsumoData.ConsumoPromedio.ToString("N2")</h3>
+                                            <p>por orden</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5>Propina Promedio</h5>
+                                            <h3 class="text-success mt-3">Q @PromedioConsumoData.PropinaPromedio.ToString("N2")</h3>
+                                            <p>(@PromedioConsumoData.PorcentajePropina.ToString("N2")%)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5>Artículos por Orden</h5>
+                                            <h3 class="text-info mt-3">@PromedioConsumoData.ArticulosPromedio.ToString("N1")</h3>
+                                            <p>unidades</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            break;
+                        case "VentasPorMesa":
+                            <h5>Ventas por Mesa</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Mesa</th>
+                                        <th>Órdenes</th>
+                                        <th>Total Ventas</th>
+                                        <th>Promedio por Orden</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var mesa in VentasPorMesa)
+                                    {
+                                        <tr>
+                                            <td>@mesa.Numero</td>
+                                            <td class="text-end">@mesa.TotalOrdenes</td>
+                                            <td class="text-end">Q @mesa.TotalVentas.ToString("N2")</td>
+                                            <td class="text-end">Q @mesa.PromedioOrden.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            break;
+                        case "VentasDiarias":
+                            <h5>Ventas Diarias</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Órdenes</th>
+                                        <th>Artículos Vendidos</th>
+                                        <th>Subtotal</th>
+                                        <th>Propinas</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var venta in VentasDiarias)
+                                    {
+                                        <tr>
+                                            <td>@venta.Fecha.ToString("dd/MM/yyyy")</td>
+                                            <td class="text-end">@venta.TotalOrdenes</td>
+                                            <td class="text-end">@venta.TotalArticulos</td>
+                                            <td class="text-end">Q @venta.Subtotal.ToString("N2")</td>
+                                            <td class="text-end">Q @venta.Propinas.ToString("N2")</td>
+                                            <td class="text-end">Q @venta.Total.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            break;
+                        case "VentasPorCategoria":
+                            <h5>Ventas Por Categoria</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Categoría</th>
+                                        <th>Total Unidades</th>
+                                        <th>Total Ventas</th>
+                                        <th>% del Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int contadorCat = 1;
+                                        decimal totalVentasCat = VentasPorCategoria.Sum(c => c.TotalVentas);
+                                    }
+                                    @foreach (var categoria in VentasPorCategoria)
+                                    {
+                                        decimal porcentaje = (categoria.TotalVentas / totalVentasCat) * 100;
+                                        <tr>
+                                            <td>@contadorCat</td>
+                                            <td>@categoria.Nombre</td>
+                                            <td class="text-end">@categoria.TotalUnidades</td>
+                                            <td class="text-end">Q @categoria.TotalVentas.ToString("N2")</td>
+                                            <td class="text-end">@porcentaje.ToString("N2")%</td>
+                                        </tr>
+                                        contadorCat++;
+                                    }
+                                </tbody>
+                            </table>
+                            break;
+                        case "ProductosMasVendidos":
+                            <h5>Productos Más Vendidos</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Producto</th>
+                                        <th>Categoría</th>
+                                        <th>Unidades</th>
+                                        <th>Total</th>
+                                        <th>%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int contadorModal = 1;
+                                        decimal totalVentasModal = ProductosMasVendidos.Sum(p => p.TotalVentas);
+                                    }
+                                    @foreach (var producto in ProductosMasVendidos)
+                                    {
+                                        decimal porcentaje = (producto.TotalVentas / totalVentasModal) * 100;
+                                        <tr>
+                                            <td>@contadorModal</td>
+                                            <td>@producto.Nombre</td>
+                                            <td>@producto.Categoria</td>
+                                            <td class="text-end">@producto.UnidadesVendidas</td>
+                                            <td class="text-end">Q @producto.TotalVentas.ToString("N2")</td>
+                                            <td class="text-end">@porcentaje.ToString("N2")%</td>
+                                        </tr>
+                                        contadorModal++;
+                                    }
+                                </tbody>
+                            </table>
+                            break;
+
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" @onclick="ImprimirReporte">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button type="button" class="btn btn-secondary" @onclick="CerrarModal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ModalVisible)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private DateTime FechaInicio { get; set; } = DateTime.Now.AddDays(-30);
+    private DateTime FechaFin { get; set; } = DateTime.Now;
+    private string TipoReporteSeleccionado { get; set; } = "ProductosMasVendidos";
+    private int CantidadItems { get; set; } = 10;
+    private bool DatosGenerados { get; set; } = false;
+
+    // Modal properties
+    private bool ModalVisible { get; set; } = false;
+    private string ModalDisplay => ModalVisible ? "display: block;" : "display: none;";
+    private string ModalClass => ModalVisible ? "modal fade show" : "modal fade";
+
+    // Datos de reportes
+    private List<ProductoMasVendidoDTO> ProductosMasVendidos { get; set; } = new List<ProductoMasVendidoDTO>();
+    private List<VentaPorCategoriaDTO> VentasPorCategoria { get; set; } = new List<VentaPorCategoriaDTO>();
+    private List<VentaDiariaDTO> VentasDiarias { get; set; } = new List<VentaDiariaDTO>();
+    private List<VentaMesaDTO> VentasPorMesa { get; set; } = new List<VentaMesaDTO>();
+    private PromedioConsumoDTO PromedioConsumoData { get; set; } = new PromedioConsumoDTO();
+
+    private void AbrirModal()
+    {
+        ModalVisible = true;
+    }
+
+    private void CerrarModal()
+    {
+        ModalVisible = false;
+    }
+
+    private async Task ImprimirReporte()
+    {
+        await JSRuntime.InvokeVoidAsync("window.print");
+    }
+
+    private async Task ExportarPDF()
+    {
+        await JSRuntime.InvokeVoidAsync("generarPDF");
+    }
+
+    private string ObtenerTituloReporte()
+    {
+        return TipoReporteSeleccionado switch
+        {
+            "ProductosMasVendidos" => "Productos Más Vendidos",
+            "VentasPorCategoria" => "Ventas por Categoría",
+            "VentasDiarias" => "Ventas Diarias",
+            "VentasPorMesa" => "Ventas por Mesa",
+            "PromedioConsumo" => "Promedio de Consumo",
+            _ => "Reporte"
+        };
+    }
+
+    private async Task GenerarReporte()
+    {
+        try
+        {
+            // Validar fechas
+            if (FechaFin < FechaInicio)
+            {
+                FechaFin = FechaInicio.AddDays(1);
+            }
+
+            // Filtrar órdenes por el rango de fechas y que estén pagadas
+            var ordenes = await DbContext.Ordenes
+                .Include(o => o.DetalleOrdenes)
+                    .ThenInclude(d => d.Producto)
+                        .ThenInclude(p => p.Categoria)
+                .Include(o => o.Mesa)
+                .Where(o => o.FechaCreacion >= FechaInicio &&
+                           o.FechaCreacion <= FechaFin &&
+                           o.Estado == EstadoOrden.Pagada)
+                .ToListAsync();
+
+            switch (TipoReporteSeleccionado)
+            {
+                case "ProductosMasVendidos":
+                    GenerarReporteProductosMasVendidos(ordenes);
+                    break;
+
+                case "VentasPorCategoria":
+                    GenerarReporteVentasPorCategoria(ordenes);
+                    break;
+
+                case "VentasDiarias":
+                    GenerarReporteVentasDiarias(ordenes);
+                    break;
+
+                case "VentasPorMesa":
+                    GenerarReporteVentasPorMesa(ordenes);
+                    break;
+
+                case "PromedioConsumo":
+                    GenerarReportePromedioConsumo(ordenes);
+                    break;
+            }
+
+            DatosGenerados = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void GenerarReporteProductosMasVendidos(List<Orden> ordenes)
+    {
+        ProductosMasVendidos = ordenes
+            .SelectMany(o => o.DetalleOrdenes)
+            .GroupBy(d => new { d.ProductoId, d.Producto.Nombre, Categoria = d.Producto.Categoria.Nombre })
+            .Select(g => new ProductoMasVendidoDTO
+                {
+                    ProductoId = g.Key.ProductoId,
+                    Nombre = g.Key.Nombre,
+                    Categoria = g.Key.Categoria,
+                    UnidadesVendidas = g.Sum(d => d.Cantidad),
+                    TotalVentas = g.Sum(d => d.Subtotal)
+                })
+            .OrderByDescending(p => p.TotalVentas)
+            .Take(CantidadItems)
+            .ToList();
+    }
+
+    private void GenerarReporteVentasPorCategoria(List<Orden> ordenes)
+    {
+        VentasPorCategoria = ordenes
+            .SelectMany(o => o.DetalleOrdenes)
+            .GroupBy(d => new { d.Producto.CategoriaId, d.Producto.Categoria.Nombre })
+            .Select(g => new VentaPorCategoriaDTO
+                {
+                    CategoriaId = g.Key.CategoriaId,
+                    Nombre = g.Key.Nombre,
+                    TotalUnidades = g.Sum(d => d.Cantidad),
+                    TotalVentas = g.Sum(d => d.Subtotal)
+                })
+            .OrderByDescending(c => c.TotalVentas)
+            .ToList();
+    }
+
+    private void GenerarReporteVentasDiarias(List<Orden> ordenes)
+    {
+        VentasDiarias = ordenes
+            .GroupBy(o => o.FechaCreacion.Date)
+            .Select(g => new VentaDiariaDTO
+                {
+                    Fecha = g.Key,
+                    TotalOrdenes = g.Count(),
+                    TotalArticulos = g.Sum(o => o.DetalleOrdenes.Sum(d => d.Cantidad)),
+                    Subtotal = g.Sum(o => o.Subtotal),
+                    Propinas = g.Sum(o => o.Propina),
+                    Total = g.Sum(o => o.Total)
+                })
+            .OrderBy(v => v.Fecha)
+            .ToList();
+    }
+
+    private void GenerarReporteVentasPorMesa(List<Orden> ordenes)
+    {
+        VentasPorMesa = ordenes
+            .GroupBy(o => new { o.MesaId, o.Mesa.Numero })
+            .Select(g => new VentaMesaDTO
+                {
+                    MesaId = g.Key.MesaId,
+                    Numero = g.Key.Numero,
+                    TotalOrdenes = g.Count(),
+                    TotalVentas = g.Sum(o => o.Total),
+                    PromedioOrden = g.Average(o => o.Total)
+                })
+            .OrderByDescending(m => m.TotalVentas)
+            .Take(CantidadItems)
+            .ToList();
+    }
+
+    private void GenerarReportePromedioConsumo(List<Orden> ordenes)
+    {
+        if (!ordenes.Any())
+        {
+            PromedioConsumoData = new PromedioConsumoDTO();
+            return;
+        }
+
+        var consumoPromedio = ordenes.Average(o => o.Total);
+        var propinaPromedio = ordenes.Average(o => o.Propina);
+        var subtotalPromedio = ordenes.Average(o => o.Subtotal);
+        var articulosPromedio = ordenes.Average(o => o.DetalleOrdenes.Sum(d => d.Cantidad));
+
+        PromedioConsumoData = new PromedioConsumoDTO
+            {
+                ConsumoPromedio = consumoPromedio,
+                PropinaPromedio = propinaPromedio,
+                PorcentajePropina = (propinaPromedio / subtotalPromedio) * 100,
+                ArticulosPromedio = articulosPromedio
+            };
+    }
+
+    // Clases DTO para los reportes
+    public class ProductoMasVendidoDTO
+    {
+        public int ProductoId { get; set; }
+        public string Nombre { get; set; }
+        public string Categoria { get; set; }
+        public int UnidadesVendidas { get; set; }
+        public decimal TotalVentas { get; set; }
+    }
+
+    public class VentaPorCategoriaDTO
+    {
+        public int CategoriaId { get; set; }
+        public string Nombre { get; set; }
+        public int TotalUnidades { get; set; }
+        public decimal TotalVentas { get; set; }
+    }
+
+    public class VentaDiariaDTO
+    {
+        public DateTime Fecha { get; set; }
+        public int TotalOrdenes { get; set; }
+        public int TotalArticulos { get; set; }
+        public decimal Subtotal { get; set; }
+        public decimal Propinas { get; set; }
+        public decimal Total { get; set; }
+    }
+
+    public class VentaMesaDTO
+    {
+        public int MesaId { get; set; }
+        public string Numero { get; set; }
+        public int TotalOrdenes { get; set; }
+        public decimal TotalVentas { get; set; }
+        public decimal PromedioOrden { get; set; }
+    }
+
+    public class PromedioConsumoDTO
+    {
+        public decimal ConsumoPromedio { get; set; }
+        public decimal PropinaPromedio { get; set; }
+        public decimal PorcentajePropina { get; set; }
+        public double ArticulosPromedio { get; set; }
+    }
+}

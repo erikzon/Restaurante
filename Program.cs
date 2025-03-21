@@ -29,8 +29,6 @@ public class Program
             })
             .AddIdentityCookies();
 
-
-
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
         // Configurar la base de datos con Entity Framework Core

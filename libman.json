@@ -1,0 +1,10 @@
+{
+  "version": "3.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jspdf@3.0.1",
+      "destination": "wwwroot/jspdf/"
+    }
+  ]
+}
