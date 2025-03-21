@@ -1,4 +1,4 @@
-﻿@page "/ordens/details"
+﻿@page "/ordenes/details"
 @using Microsoft.EntityFrameworkCore
 @using Restaurante.Data.Modelos
 @inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
@@ -35,8 +35,8 @@
             <dd class="col-sm-10">@orden.Total</dd>
         </dl>
         <div>
-            <a href="@($"/ordens/edit?ordenid={orden.OrdenId}")">Edit</a> |
-            <a href="@($"/ordens")">Back to List</a>
+            <a href="@($"/ordenes/edit?ordenid={orden.OrdenId}")">Edit</a> |
+            <a href="@($"/ordenes")">Back to List</a>
         </div>
     }
 </div>

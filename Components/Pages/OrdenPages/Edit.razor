@@ -1,4 +1,4 @@
-﻿@page "/ordens/edit"
+﻿@page "/ordenes/edit"
 @using Microsoft.EntityFrameworkCore
 @using Restaurante.Data.Modelos
 @inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
@@ -73,7 +73,7 @@ else
 }
 
 <div>
-    <a href="/ordens">Back to List</a>
+    <a href="/ordenes">Back to List</a>
 </div>
 
 @code {
@@ -117,7 +117,7 @@ else
             }
         }
 
-        NavigationManager.NavigateTo("/ordens");
+        NavigationManager.NavigateTo("/ordenes");
     }
 
     private bool OrdenExists(int ordenid)

@@ -1,4 +1,4 @@
-﻿@page "/ordens/delete"
+﻿@page "/ordenes/delete"
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
@@ -50,7 +50,7 @@
         </dl>
         <EditForm method="post" Model="orden" OnValidSubmit="DeleteOrden" FormName="delete" Enhance>
             <button type="submit" class="btn btn-danger" disabled="@(orden is null)">Delete</button> |
-            <a href="/ordens">Back to List</a>
+            <a href="/ordenes">Back to List</a>
         </EditForm>
     }
 </div>
@@ -77,6 +77,6 @@
         using var context = DbFactory.CreateDbContext();
         context.Ordenes.Remove(orden!);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/ordens");
+        NavigationManager.NavigateTo("/ordenes");
     }
 }
