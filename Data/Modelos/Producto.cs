@@ -16,7 +16,7 @@ namespace Restaurante.Data.Modelos
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Precio { get; set; }
 
-        public string Codigo { get; set; } // P1, P2, B1, etc.
+        public string Codigo { get; set; }
 
         public int CategoriaId { get; set; }
 
