@@ -10,7 +10,7 @@
 @attribute [Authorize]
 <PageTitle>Indice</PageTitle>
 
-<h1>Index</h1>
+<h1>Indice</h1>
 
 
 <QuickGrid Class="table" Items="context.Ordenes">
@@ -23,9 +23,9 @@
     <PropertyColumn Property="orden => orden.Total" />
 
     <TemplateColumn Context="orden">
-        <a href="@($"ordens/edit?ordenid={orden.OrdenId}")">Edit</a> |
-        <a href="@($"ordens/details?ordenid={orden.OrdenId}")">Details</a> |
-        <a href="@($"ordens/delete?ordenid={orden.OrdenId}")">Delete</a>
+        <a href="@($"ordens/edit?ordenid={orden.OrdenId}")">Editar</a> |
+        <a href="@($"ordens/details?ordenid={orden.OrdenId}")">Detalles</a> |
+        <a href="@($"ordens/delete?ordenid={orden.OrdenId}")">Eliminar</a>
     </TemplateColumn>
 </QuickGrid>
 
