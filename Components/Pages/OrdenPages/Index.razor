@@ -7,8 +7,8 @@
 @inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
 @using Microsoft.AspNetCore.Authorization
 
-@attribute [Authorize(Roles = "admin")]
-<PageTitle>Index</PageTitle>
+@attribute [Authorize]
+<PageTitle>Indice</PageTitle>
 
 <h1>Index</h1>
 
@@ -23,9 +23,9 @@
     <PropertyColumn Property="orden => orden.Total" />
 
     <TemplateColumn Context="orden">
-        <a href="@($"ordenes/edit?ordenid={orden.OrdenId}")">Edit</a> |
-        <a href="@($"ordenes/details?ordenid={orden.OrdenId}")">Details</a> |
-        <a href="@($"ordenes/delete?ordenid={orden.OrdenId}")">Delete</a>
+        <a href="@($"ordens/edit?ordenid={orden.OrdenId}")">Edit</a> |
+        <a href="@($"ordens/details?ordenid={orden.OrdenId}")">Details</a> |
+        <a href="@($"ordens/delete?ordenid={orden.OrdenId}")">Delete</a>
     </TemplateColumn>
 </QuickGrid>
 
