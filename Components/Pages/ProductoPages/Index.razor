@@ -12,10 +12,10 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Index</h1>
+<h1>Indice</h1>
 
 <p>
-    <a href="productos/create">Create New</a>
+    <a href="productos/create">Crear nuevo</a>
 </p>
 
 <QuickGrid Class="table" Items="context.Productos.Include(p => p.Categoria)">
@@ -25,9 +25,9 @@
     <PropertyColumn Property="producto => producto.Categoria.Nombre"/>
 
     <TemplateColumn Context="producto">
-        <a href="@($"productos/edit?productoid={producto.ProductoId}")">Edit</a> |
-        <a href="@($"productos/details?productoid={producto.ProductoId}")">Details</a> |
-        <a href="@($"productos/delete?productoid={producto.ProductoId}")">Delete</a>
+        <a href="@($"productos/edit?productoid={producto.ProductoId}")">Editar</a> |
+        <a href="@($"productos/details?productoid={producto.ProductoId}")">Detalles</a> |
+        <a href="@($"productos/delete?productoid={producto.ProductoId}")">Eliminar</a>
     </TemplateColumn>
 </QuickGrid>
 

@@ -9,14 +9,14 @@
 
 <PageTitle>Details</PageTitle>
 
-<h1>Details</h1>
+<h1>Detalles</h1>
 
 <div>
     <h2>Producto</h2>
     <hr />
     @if (producto is null)
     {
-        <p><em>Loading...</em></p>
+        <p><em>Cargando...</em></p>
     }
     else {
         <dl class="row">
@@ -31,7 +31,7 @@
         </dl>
         <div>
             <a href="@($"/productos/edit?productoid={producto.ProductoId}")">Edit</a> |
-            <a href="@($"/productos")">Back to List</a>
+            <a href="@($"/productos")">Regresar a la lista</a>
         </div>
     }
 </div>
