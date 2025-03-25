@@ -12,20 +12,20 @@
 
 <PageTitle>Register confirmation</PageTitle>
 
-<h1>Register confirmation</h1>
+<h1>Confirmacion de registro</h1>
 
 <StatusMessage Message="@statusMessage" />
 
 @if (emailConfirmationLink is not null)
 {
     <p>
-        This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-        Normally this would be emailed: <a href="@emailConfirmationLink">Click here to confirm your account</a>
+        Esta aplicación actualmente no tiene registrado un remitente de correo electrónico, consulte <a href="https://aka.ms/aspaccountconf">estos documentos</a> para configurar un remitente de correo electrónico válido.
+        Esto normalmente se enviara por correo electrónico: <a href="@emailConfirmationLink">Click aqui para confirmar su cuenta</a>
     </p>
 }
 else
 {
-    <p>Please check your email to confirm your account.</p>
+    <p>Por favor consulte su correo electrónico para confirmar su cuenta.</p>
 }
 
 @code {
