@@ -7,9 +7,9 @@
 @inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Delete</PageTitle>
+<PageTitle>Eliminar</PageTitle>
 
-<h1>Delete</h1>
+<h1>Eliminar</h1>
 
 <p>Estas seguro que quieres eliminar esto?</p>
 <div>
@@ -49,8 +49,8 @@
             <dd class="col-sm-10">@orden.Total</dd>
         </dl>
         <EditForm method="post" Model="orden" OnValidSubmit="DeleteOrden" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(orden is null)">Delete</button> |
-            <a href="/ordenes">Back to List</a>
+            <button type="submit" class="btn btn-danger" disabled="@(orden is null)">Eliminar</button> |
+            <a href="/ordenes">Regresar a la lista</a>
         </EditForm>
     }
 </div>

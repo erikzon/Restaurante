@@ -11,7 +11,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject UserManager<ApplicationUser> UserManager
 @inject RoleManager<IdentityRole> RoleManager
-<PageTitle>Log in</PageTitle>
+<PageTitle>Iniciar sesion</PageTitle>
 
 <h1>Inicia sesión</h1>
 <div class="row">
@@ -20,7 +20,7 @@
             <StatusMessage Message="@errorMessage" />
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator />
-                <h2>Utiliza una cuenta local para inciar sesión.</h2>
+                <h2>Utiliza una cuenta local para iniciar sesión.</h2>
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
