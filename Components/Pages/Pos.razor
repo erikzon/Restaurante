@@ -5,6 +5,7 @@
 @using Restaurante.Data
 @using Restaurante.Data.Modelos
 @using System.Linq
+@inject IJSRuntime JSRuntime
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 
 <div class="container-fluid">
@@ -41,7 +42,7 @@
             </div>
         </div>
 
-        <div class="col-md-4 bg-light p-3">
+        <div class="col-md-4 bg-light p-3" id="reporteParaImprimir">
             <div class="mb-3">
                 <label for="selectMesa" class="form-label">Mesa</label>
                 <select id="selectMesa" class="form-select" @bind="mesaSeleccionadaId">
@@ -52,7 +53,7 @@
                 </select>
             </div>
 
-            <h4 class="text-center mb-3">ORDEN ACTUAL</h4>
+            <h4 class="text-center mb-3 no-imprimir">ORDEN ACTUAL</h4>
 
             <div class="order-items mb-3">
                 @if (ordenActual.DetalleOrdenes is not null)
@@ -62,9 +63,9 @@
                         <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
                             <span>@detalle.Producto.Nombre</span>
                             <div class="d-flex align-items-center">
-                                <button class="btn btn-sm btn-outline-secondary" @onclick="() => DisminuirCantidad(detalle)">-</button>
+                                <button class="btn btn-sm btn-outline-secondary no-imprimir" @onclick="() => DisminuirCantidad(detalle)">-</button>
                                 <span class="mx-2">@detalle.Cantidad</span>
-                                <button class="btn btn-sm btn-outline-secondary" @onclick="() => AumentarCantidad(detalle)">+</button>
+                                <button class="btn btn-sm btn-outline-secondary no-imprimir" @onclick="() => AumentarCantidad(detalle)">+</button>
                                 <span class="ms-3">Q@(detalle.Subtotal.ToString("0.00"))</span>
                             </div>
                         </div>
@@ -74,22 +75,22 @@
             </div>
 
             <div class="mt-4">
-                <div class="d-flex justify-content-between mb-2">
+                <div class="d-flex justify-content-between mb-2 no-imprimir">
                     <span>Subtotal</span>
                     <span>Q@(ordenActual.Subtotal.ToString("0.00"))</span>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
+                <div class="d-flex justify-content-between mb-2 no-imprimir">
                     <span>Propina</span>
                     <span>Q<input type="number" min="0" name="Propina" @bind="ordenActual.Propina" @oninput="@(e => OnPropinaChanged(e))" /></span>
                 </div>
-                <div class="d-flex justify-content-between fw-bold mb-4">
+                <div class="d-flex justify-content-between fw-bold mb-4 no-imprimir">
                     <span>TOTAL</span>
                     <span>Q@(ordenActual.Total.ToString("0.00"))</span>
                 </div>
 
-                <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-danger" @onclick="CancelarOrden">CANCELAR</button>
-                    <button class="btn btn-primary" @onclick="ProcesarOrden">COBRAR</button>
+                <div class="d-flex justify-content-between no-imprimir">
+                    <button class="btn btn-outline-danger no-imprimir" @onclick="CancelarOrden">CANCELAR</button>
+                    <button class="btn btn-primary no-imprimir" @onclick="ProcesarOrden">COBRAR</button>
                 </div>
             </div>
         </div>
@@ -260,6 +261,9 @@
 
         // Guardar los detalles
         await context.SaveChangesAsync();
+
+        // generarPDF para imprimir comanda
+        await JSRuntime.InvokeVoidAsync("window.print");
 
         // Reiniciar la orden actual
         InicializarOrdenActual();

@@ -40,10 +40,25 @@
     });
 }
 
-// Función para imprimir directamente
+// Función para imprimir reporte
 window.imprimirReporte = function () {
     const contenidoOriginal = document.body.innerHTML;
     const contenidoImprimir = document.getElementById('reporteParaImprimir').innerHTML;
+
+    document.body.innerHTML = `
+        <div style="padding: 20px;">
+            ${contenidoImprimir}
+        </div>
+    `;
+
+    window.print();
+    document.body.innerHTML = contenidoOriginal;
+}
+
+// Función para imprimir comanda
+window.imprimirComanda = function () {
+    const contenidoOriginal = document.body.innerHTML;
+    const contenidoImprimir = document.getElementById('comanda').innerHTML;
 
     document.body.innerHTML = `
         <div style="padding: 20px;">

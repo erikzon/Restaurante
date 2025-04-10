@@ -49,3 +49,32 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+/* Oculta todo por defecto al imprimir */
+@media print {
+    body * {
+        visibility: hidden; /* Oculta todo */
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Muestra solo el contenedor del reporte y su contenido */
+    #reporteParaImprimir, #reporteParaImprimir * {
+        visibility: visible;
+    }
+
+    /* Asegura que el reporte ocupe el espacio necesario */
+    #reporteParaImprimir {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px; /* Añade el padding deseado para impresión */
+        border: none; /* Quita bordes si los tuviera */
+    }
+
+        /* Opcional: Oculta elementos específicos DENTRO del reporte que no quieres imprimir */
+        #reporteParaImprimir .no-imprimir {
+            display: none;
+        }
+}
