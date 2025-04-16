@@ -26,7 +26,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasOne(p => p.Categoria)
             .WithMany(c => c.Productos)
             .HasForeignKey(p => p.CategoriaId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<DetalleOrden>()
             .HasOne(d => d.Orden)
@@ -38,13 +38,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasOne(d => d.Producto)
             .WithMany()
             .HasForeignKey(d => d.ProductoId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Orden>()
             .HasOne(o => o.Mesa)
             .WithMany(m => m.Ordenes)
             .HasForeignKey(o => o.MesaId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Datos iniciales (Seed)
         SeedData(modelBuilder);
