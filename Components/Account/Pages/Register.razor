@@ -131,7 +131,7 @@
         public string Password { get; set; } = "";
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
+        [Display(Name = "Confirmar Contraseña")]
         [Compare("Password", ErrorMessage = "La contrasena y la confirmacion de contraseña no coinciden.")]
         public string ConfirmPassword { get; set; } = "";
     }
