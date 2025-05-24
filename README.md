@@ -10,3 +10,6 @@ dotnet ef database update
 instalar la version SqlLocalDB de sqlserver
 y apuntar a ella desde el appsettings.json
 "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=RestauranteDB;Trusted_Connection=True;MultipleActiveResultSets=true"
+
+
+dotnet ef migrations add ConfigurarEliminacionEnCascada
