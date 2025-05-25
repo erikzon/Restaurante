@@ -361,122 +361,130 @@
                             </div>
                             break;
                         case "VentasPorMesa":
-                            <h5>Ventas por Mesa</h5>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Mesa</th>
-                                        <th>Órdenes</th>
-                                        <th>Total Ventas</th>
-                                        <th>Promedio por Orden</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var mesa in VentasPorMesa)
-                                    {
+                            <div class="table-responsive">
+                                <h5>Ventas por Mesa</h5>
+                                <table class="table table-bordered">
+                                    <thead>
                                         <tr>
-                                            <td>@mesa.Numero</td>
-                                            <td class="text-end">@mesa.TotalOrdenes</td>
-                                            <td class="text-end">Q @mesa.TotalVentas.ToString("N2")</td>
-                                            <td class="text-end">Q @mesa.PromedioOrden.ToString("N2")</td>
+                                            <th>Mesa</th>
+                                            <th>Órdenes</th>
+                                            <th>Total Ventas</th>
+                                            <th>Promedio por Orden</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var mesa in VentasPorMesa)
+                                        {
+                                            <tr>
+                                                <td>@mesa.Numero</td>
+                                                <td class="text-end">@mesa.TotalOrdenes</td>
+                                                <td class="text-end">Q @mesa.TotalVentas.ToString("N2")</td>
+                                                <td class="text-end">Q @mesa.PromedioOrden.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                             break;
                         case "VentasDiarias":
                             <h5>Ventas Diarias</h5>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Órdenes</th>
-                                        <th>Artículos Vendidos</th>
-                                        <th>Subtotal</th>
-                                        <th>Propinas</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var venta in VentasDiarias)
-                                    {
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
                                         <tr>
-                                            <td>@venta.Fecha.ToString("dd/MM/yyyy")</td>
-                                            <td class="text-end">@venta.TotalOrdenes</td>
-                                            <td class="text-end">@venta.TotalArticulos</td>
-                                            <td class="text-end">Q @venta.Subtotal.ToString("N2")</td>
-                                            <td class="text-end">Q @venta.Propinas.ToString("N2")</td>
-                                            <td class="text-end">Q @venta.Total.ToString("N2")</td>
+                                            <th>Fecha</th>
+                                            <th>Órdenes</th>
+                                            <th>Artículos Vendidos</th>
+                                            <th>Subtotal</th>
+                                            <th>Propinas</th>
+                                            <th>Total</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var venta in VentasDiarias)
+                                        {
+                                            <tr>
+                                                <td>@venta.Fecha.ToString("dd/MM/yyyy")</td>
+                                                <td class="text-end">@venta.TotalOrdenes</td>
+                                                <td class="text-end">@venta.TotalArticulos</td>
+                                                <td class="text-end">Q @venta.Subtotal.ToString("N2")</td>
+                                                <td class="text-end">Q @venta.Propinas.ToString("N2")</td>
+                                                <td class="text-end">Q @venta.Total.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                             break;
                         case "VentasPorCategoria":
                             <h5>Ventas Por Categoria</h5>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Categoría</th>
-                                        <th>Total Unidades</th>
-                                        <th>Total Ventas</th>
-                                        <th>% del Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @{
-                                        int contadorCat = 1;
-                                        decimal totalVentasCat = VentasPorCategoria.Sum(c => c.TotalVentas);
-                                    }
-                                    @foreach (var categoria in VentasPorCategoria)
-                                    {
-                                        decimal porcentaje = (categoria.TotalVentas / totalVentasCat) * 100;
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
                                         <tr>
-                                            <td>@contadorCat</td>
-                                            <td>@categoria.Nombre</td>
-                                            <td class="text-end">@categoria.TotalUnidades</td>
-                                            <td class="text-end">Q @categoria.TotalVentas.ToString("N2")</td>
-                                            <td class="text-end">@porcentaje.ToString("N2")%</td>
+                                            <th>#</th>
+                                            <th>Categoría</th>
+                                            <th>Total Unidades</th>
+                                            <th>Total Ventas</th>
+                                            <th>% del Total</th>
                                         </tr>
-                                        contadorCat++;
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int contadorCat = 1;
+                                            decimal totalVentasCat = VentasPorCategoria.Sum(c => c.TotalVentas);
+                                        }
+                                        @foreach (var categoria in VentasPorCategoria)
+                                        {
+                                            decimal porcentaje = (categoria.TotalVentas / totalVentasCat) * 100;
+                                            <tr>
+                                                <td>@contadorCat</td>
+                                                <td>@categoria.Nombre</td>
+                                                <td class="text-end">@categoria.TotalUnidades</td>
+                                                <td class="text-end">Q @categoria.TotalVentas.ToString("N2")</td>
+                                                <td class="text-end">@porcentaje.ToString("N2")%</td>
+                                            </tr>
+                                            contadorCat++;
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                             break;
                         case "ProductosMasVendidos":
                             <h5>Productos Más Vendidos</h5>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Producto</th>
-                                        <th>Categoría</th>
-                                        <th>Unidades</th>
-                                        <th>Total</th>
-                                        <th>%</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @{
-                                        int contadorModal = 1;
-                                        decimal totalVentasModal = ProductosMasVendidos.Sum(p => p.TotalVentas);
-                                    }
-                                    @foreach (var producto in ProductosMasVendidos)
-                                    {
-                                        decimal porcentaje = (producto.TotalVentas / totalVentasModal) * 100;
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
                                         <tr>
-                                            <td>@contadorModal</td>
-                                            <td>@producto.Nombre</td>
-                                            <td>@producto.Categoria</td>
-                                            <td class="text-end">@producto.UnidadesVendidas</td>
-                                            <td class="text-end">Q @producto.TotalVentas.ToString("N2")</td>
-                                            <td class="text-end">@porcentaje.ToString("N2")%</td>
+                                            <th>#</th>
+                                            <th>Producto</th>
+                                            <th>Categoría</th>
+                                            <th>Unidades</th>
+                                            <th>Total</th>
+                                            <th>%</th>
                                         </tr>
-                                        contadorModal++;
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int contadorModal = 1;
+                                            decimal totalVentasModal = ProductosMasVendidos.Sum(p => p.TotalVentas);
+                                        }
+                                        @foreach (var producto in ProductosMasVendidos)
+                                        {
+                                            decimal porcentaje = (producto.TotalVentas / totalVentasModal) * 100;
+                                            <tr>
+                                                <td>@contadorModal</td>
+                                                <td>@producto.Nombre</td>
+                                                <td>@producto.Categoria</td>
+                                                <td class="text-end">@producto.UnidadesVendidas</td>
+                                                <td class="text-end">Q @producto.TotalVentas.ToString("N2")</td>
+                                                <td class="text-end">@porcentaje.ToString("N2")%</td>
+                                            </tr>
+                                            contadorModal++;
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                             break;
 
                     }
