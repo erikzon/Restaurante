@@ -10,26 +10,28 @@
 @implements IAsyncDisposable
 @inject IDbContextFactory<Restaurante.Data.ApplicationDbContext> DbFactory
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Productos</PageTitle>
 
-<h1>Indice</h1>
+<h1>Productos</h1>
 
 <p>
     <a href="productos/create">Crear nuevo producto</a>
 </p>
 
-<QuickGrid Class="table" Items="context.Productos.Include(p => p.Categoria)">
-    <PropertyColumn Property="producto => producto.Nombre" />
-    <PropertyColumn Property="producto => producto.Precio" />
-    <PropertyColumn Property="producto => producto.Codigo" />
-    <PropertyColumn Property="producto => producto.Categoria.Nombre"/>
+<div class="table-responsive">
+    <QuickGrid Class="table table-striped table-bordered align-middle" Items="context.Productos.Include(p => p.Categoria)">
+        <PropertyColumn Property="producto => producto.Nombre" />
+        <PropertyColumn Property="producto => producto.Precio" />
+        <PropertyColumn Property="producto => producto.Codigo" />
+        <PropertyColumn Property="producto => producto.Categoria.Nombre"/>
 
-    <TemplateColumn Context="producto">
-        <a href="@($"productos/edit?productoid={producto.ProductoId}")">Editar</a> |
-        <a href="@($"productos/details?productoid={producto.ProductoId}")">Detalles</a> |
-        <a href="@($"productos/delete?productoid={producto.ProductoId}")">Eliminar</a>
-    </TemplateColumn>
-</QuickGrid>
+        <TemplateColumn Context="producto">
+            <a href="@($"productos/edit?productoid={producto.ProductoId}")">Editar</a> |
+            <a href="@($"productos/details?productoid={producto.ProductoId}")">Detalles</a> |
+            <a href="@($"productos/delete?productoid={producto.ProductoId}")">Eliminar</a>
+        </TemplateColumn>
+    </QuickGrid>
+</div>
 
 @code {
     private ApplicationDbContext context = default!;
