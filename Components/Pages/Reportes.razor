@@ -564,7 +564,8 @@
             // Validar fechas
             if (FechaFin < FechaInicio)
             {
-                FechaFin = FechaInicio.AddDays(1);
+                await JSRuntime.InvokeVoidAsync("alert", "Las fechas seleccionadas no tienen un rango válido. Por favor, verifique las fechas.");
+                return;
             }
 
             // Filtrar órdenes por el rango de fechas y que estén pagadas
