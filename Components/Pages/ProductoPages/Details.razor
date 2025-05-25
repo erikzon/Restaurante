@@ -26,8 +26,8 @@
             <dd class="col-sm-10">@producto.Precio</dd>
             <dt class="col-sm-2">Codigo</dt>
             <dd class="col-sm-10">@producto.Codigo</dd>
-            <dt class="col-sm-2">CategoriaId</dt>
-            <dd class="col-sm-10">@producto.CategoriaId</dd>
+            <dt class="col-sm-2">Categoria</dt>
+            <dd class="col-sm-10">@producto.Categoria.Nombre</dd>
         </dl>
         <div>
             <a href="@($"/productos/edit?productoid={producto.ProductoId}")">Editar</a> |
@@ -45,7 +45,9 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        producto = await context.Productos.FirstOrDefaultAsync(m => m.ProductoId == ProductoId);
+        producto = await context.Productos
+            .Include(m => m.Categoria)
+            .FirstOrDefaultAsync(m => m.ProductoId == ProductoId);
 
         if (producto is null)
         {
