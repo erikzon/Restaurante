@@ -34,10 +34,16 @@
                 <ValidationMessage For="() => Producto.Codigo" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="categoriaid" class="form-label">CategoriaId:</label> 
-                <InputNumber id="categoriaid" @bind-Value="Producto.CategoriaId" class="form-control" /> 
-                <ValidationMessage For="() => Producto.CategoriaId" class="text-danger" /> 
-            </div>        
+                <label for="categoriaid" class="form-label">Categoría:</label>
+                <InputSelect id="categoriaid" @bind-Value="Producto.CategoriaId" class="form-control">
+                    <option value="">Seleccione una categoría</option>
+                    @foreach (var categoria in Categorias)
+                    {
+                        <option value="@categoria.CategoriaId">@categoria.Nombre</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Producto.CategoriaId" class="text-danger" />
+            </div>
             <button type="submit" class="btn btn-primary">Crear</button>
         </EditForm>
     </div>
@@ -50,6 +56,18 @@
 @code {
     [SupplyParameterFromForm]
     private Producto Producto { get; set; } = new();
+
+    private List<Categoria> Categorias = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Categorias = await context.Categorias.OrderBy(c => c.Nombre).ToListAsync();
+        if (Categorias is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
 
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddProducto()
