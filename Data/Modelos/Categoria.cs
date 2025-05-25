@@ -7,8 +7,8 @@ namespace Restaurante.Data.Modelos
         [Key]
         public int CategoriaId { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Required(ErrorMessage = "El nombre de la categoría es obligatorio.")]
+        [StringLength(50, ErrorMessage = "El nombre de la categoría no puede superar los 50 caracteres.")]
         public string Nombre { get; set; }
 
         public virtual ICollection<Producto> Productos { get; set; }

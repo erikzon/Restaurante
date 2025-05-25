@@ -8,11 +8,11 @@ namespace Restaurante.Data.Modelos
         [Key]
         public int ProductoId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "El nombre del producto es obligatorio.")]
         [StringLength(50)]
         public string Nombre { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "El precio es obligatorio.")]
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Precio { get; set; }
 
