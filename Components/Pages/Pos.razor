@@ -229,8 +229,12 @@
     {
         if (decimal.TryParse(e.Value?.ToString(), out var newValue))
         {
+            if (newValue < 0)
+            {
+                newValue = newValue * -1;
+            }
             ordenActual.Propina = newValue;
-            CalcularTotales(); // Aquí llamas a tu método para calcular totales
+            CalcularTotales();
         }
     }
 

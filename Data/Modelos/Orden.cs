@@ -23,7 +23,7 @@ namespace Restaurante.Data.Modelos
         public EstadoOrden Estado { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        [Range(0, double.MaxValue, ErrorMessage = "El subtotal no puede ser negativo.")]
+        [Range(1, double.MaxValue, ErrorMessage = "El subtotal no puede ser negativo o cero.")]
         public decimal Subtotal { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
@@ -31,7 +31,7 @@ namespace Restaurante.Data.Modelos
         public decimal Propina { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        [Range(0, double.MaxValue, ErrorMessage = "El total no puede ser negativo.")]
+        [Range(1, double.MaxValue, ErrorMessage = "El total no puede ser negativo o cero.")]
         public decimal Total { get; set; }
 
         public virtual ICollection<DetalleOrden> DetalleOrdenes { get; set; }

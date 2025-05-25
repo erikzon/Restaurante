@@ -59,17 +59,17 @@ else
 
                 <div class="mb-3">
                     <label for="subtotal" class="form-label">Subtotal:</label>
-                    <InputNumber id="subtotal" @bind-Value="Orden.Subtotal" class="form-control" />
+                    <InputNumber id="subtotal" class="form-control" @bind-Value="Orden.Subtotal" @bind-Value:after="OnSubtotalOrPropinaChanged" />
                     <ValidationMessage For="() => Orden.Subtotal" class="text-danger" />
                 </div>
                 <div class="mb-3">
                     <label for="propina" class="form-label">Propina:</label>
-                    <InputNumber id="propina" @bind-Value="Orden.Propina" class="form-control" />
+                    <InputNumber id="propina" class="form-control" @bind-Value="Orden.Propina" @bind-Value:after="OnSubtotalOrPropinaChanged" />
                     <ValidationMessage For="() => Orden.Propina" class="text-danger" />
                 </div>
                 <div class="mb-3">
                     <label for="total" class="form-label">Total:</label>
-                    <InputNumber id="total" @bind-Value="Orden.Total" class="form-control" />
+                    <InputNumber id="total" @bind-Value="Orden.Total" class="form-control" disabled/>
                     <ValidationMessage For="() => Orden.Total" class="text-danger" />
                 </div>
                 <button type="submit" class="btn btn-primary">Guardar</button>
@@ -100,12 +100,29 @@ else
         {
             NavigationManager.NavigateTo("notfound");
         }
+        else
+        {
+            CalcularTotal();
+        }
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private void CalcularTotal()
+    {
+        if (Orden != null)
+        {
+            Orden.Total = Orden.Subtotal + Orden.Propina;
+        }
+    }
+
+    private void OnSubtotalOrPropinaChanged()
+    {
+        CalcularTotal();
+        StateHasChanged();
+    }
+
     private async Task UpdateOrden()
     {
+        CalcularTotal();
         using var context = DbFactory.CreateDbContext();
         Orden!.Mesa = null;
         context.Attach(Orden!).State = EntityState.Modified;

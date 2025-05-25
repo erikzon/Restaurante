@@ -19,6 +19,8 @@ namespace Restaurante.Data.Modelos
         [DataType(DataType.Currency, ErrorMessage = "El precio debe ser un número válido.")]
         public decimal Precio { get; set; }
 
+        [Display(Name = "Precio")]
+        [Required(ErrorMessage = "El codigo es obligatorio.")]
         public string Codigo { get; set; }
 
         public int CategoriaId { get; set; }
