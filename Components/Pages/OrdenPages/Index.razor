@@ -8,26 +8,27 @@
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
-<PageTitle>Indice</PageTitle>
+<PageTitle>Ordenes</PageTitle>
 
-<h1>Indice</h1>
+<h1>Ordenes</h1>
 
+<div class="table-responsive">
+    <QuickGrid Class="table table-striped table-bordered align-middle" Items="context.Ordenes">
+        <PropertyColumn Property="orden => orden.MesaId" />
+        <PropertyColumn Property="orden => orden.FechaCreacion" />
+        @* <PropertyColumn Property="orden => orden.FechaCierre" /> *@
+        @* <PropertyColumn Property="orden => orden.Estado" /> *@
+        <PropertyColumn Property="orden => orden.Subtotal" />
+        <PropertyColumn Property="orden => orden.Propina" />
+        <PropertyColumn Property="orden => orden.Total" />
 
-<QuickGrid Class="table" Items="context.Ordenes">
-    <PropertyColumn Property="orden => orden.MesaId" />
-    <PropertyColumn Property="orden => orden.FechaCreacion" />
-    <PropertyColumn Property="orden => orden.FechaCierre" />
-    <PropertyColumn Property="orden => orden.Estado" />
-    <PropertyColumn Property="orden => orden.Subtotal" />
-    <PropertyColumn Property="orden => orden.Propina" />
-    <PropertyColumn Property="orden => orden.Total" />
-
-    <TemplateColumn Context="orden">
-        <a href="@($"ordenes/edit?ordenid={orden.OrdenId}")">Editar</a> |
-        <a href="@($"ordenes/details?ordenid={orden.OrdenId}")">Detalles</a> |
-        <a href="@($"ordenes/delete?ordenid={orden.OrdenId}")">Eliminar</a>
-    </TemplateColumn>
-</QuickGrid>
+        <TemplateColumn Context="orden">
+            <a href="@($"ordenes/edit?ordenid={orden.OrdenId}")">Editar</a> |
+            <a href="@($"ordenes/details?ordenid={orden.OrdenId}")">Detalles</a> |
+            <a href="@($"ordenes/delete?ordenid={orden.OrdenId}")">Eliminar</a>
+        </TemplateColumn>
+    </QuickGrid>
+</div>
 
 @code {
     private ApplicationDbContext context = default!;

@@ -41,10 +41,17 @@ else
                     <ValidationMessage For="() => Producto.Codigo" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="categoriaid" class="form-label">CategoriaId:</label>
-                    <InputNumber id="categoriaid" @bind-Value="Producto.CategoriaId" class="form-control" />
+                    <label for="categoriaid" class="form-label">Categoría:</label>
+                    <InputSelect id="categoriaid" @bind-Value="Producto.CategoriaId" class="form-control">
+                        <option value="">Seleccione una categoría</option>
+                        @foreach (var categoria in Categorias)
+                        {
+                            <option value="@categoria.CategoriaId">@categoria.Nombre</option>
+                        }
+                    </InputSelect>
                     <ValidationMessage For="() => Producto.CategoriaId" class="text-danger" />
                 </div>
+
                 <button type="submit" class="btn btn-primary">Guardar</button>
             </EditForm>
         </div>
@@ -62,10 +69,13 @@ else
     [SupplyParameterFromForm]
     private Producto? Producto { get; set; }
 
+    private List<Categoria> Categorias = new();
+
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        Producto ??= await context.Productos.FirstOrDefaultAsync(m => m.ProductoId == ProductoId);
+        Producto ??= await context.Productos.Include(m => m.Categoria).FirstOrDefaultAsync(m => m.ProductoId == ProductoId);
+        Categorias = await context.Categorias.OrderBy(c => c.Nombre).ToListAsync();
 
         if (Producto is null)
         {
@@ -76,6 +86,7 @@ else
     private async Task UpdateProducto()
     {
         using var context = DbFactory.CreateDbContext();
+        Producto!.Categoria = null;
         context.Attach(Producto!).State = EntityState.Modified;
 
         try

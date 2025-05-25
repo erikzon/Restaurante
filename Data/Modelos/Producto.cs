@@ -8,12 +8,15 @@ namespace Restaurante.Data.Modelos
         [Key]
         public int ProductoId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "El nombre del producto es obligatorio.")]
         [StringLength(50)]
         public string Nombre { get; set; }
 
-        [Required]
+        [Display(Name = "Precio")]
+        [Required(ErrorMessage = "El precio es obligatorio.")]
         [Column(TypeName = "decimal(18, 2)")]
+        [Range(typeof(decimal), "0.01", "99999.99", ErrorMessage = "El precio debe ser un número decimal válido y mayor que cero.")]
+        [DataType(DataType.Currency, ErrorMessage = "El precio debe ser un número válido.")]
         public decimal Precio { get; set; }
 
         public string Codigo { get; set; }
