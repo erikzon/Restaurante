@@ -25,8 +25,14 @@ else
                 <ValidationSummary role="alert"/>
                 <input type="hidden" name="Orden.OrdenId" value="@Orden.OrdenId" />
                 <div class="mb-3">
-                    <label for="mesaid" class="form-label">MesaId:</label>
-                    <InputNumber id="mesaid" @bind-Value="Orden.MesaId" class="form-control" />
+                    <label for="mesaid" class="form-label">Mesa:</label>
+                    <InputSelect id="categoriaid" @bind-Value="Orden.MesaId" class="form-control">
+                        <option value="">Seleccione una mesa</option>
+                        @foreach (var mesa in Mesas)
+                        {
+                            <option value="@mesa.MesaId">@mesa.Numero</option>
+                        }
+                    </InputSelect>
                     <ValidationMessage For="() => Orden.MesaId" class="text-danger" />
                 </div>
                 <div class="mb-3">
@@ -83,11 +89,13 @@ else
     [SupplyParameterFromForm]
     private Orden? Orden { get; set; }
 
+    private List<Mesa> Mesas = new();
+
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
         Orden ??= await context.Ordenes.FirstOrDefaultAsync(m => m.OrdenId == OrdenId);
-
+        Mesas = await context.Mesas.OrderBy(c => c.Numero).ToListAsync();
         if (Orden is null)
         {
             NavigationManager.NavigateTo("notfound");
@@ -99,6 +107,7 @@ else
     private async Task UpdateOrden()
     {
         using var context = DbFactory.CreateDbContext();
+        Orden!.Mesa = null;
         context.Attach(Orden!).State = EntityState.Modified;
 
         try
